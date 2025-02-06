@@ -1,0 +1,39 @@
+# Step 1: Install PuLP if not already installed
+!pip install pulp
+
+# Step 2: Import the PuLP library
+import pulp
+
+# Step 3: Define the problem
+# Create a maximization problem
+problem = pulp.LpProblem("Product_Mix_Problem", pulp.LpMaximize)
+
+# Step 4: Define the decision variables
+# x1 = Number of units of Product A to produce
+# x2 = Number of units of Product B to produce
+x1 = pulp.LpVariable("x1", lowBound=0, cat="Integer")  # x1 >= 0 and integer
+x2 = pulp.LpVariable("x2", lowBound=0, cat="Integer")  # x2 >= 0 and integer
+
+# Step 5: Define the objective function
+# Maximize profit: 40x1 + 30x2
+problem += 40 * x1 + 30 * x2, "Total_Profit"
+
+# Step 6: Define the constraints
+# Resource 1 constraint: 2x1 + x2 <= 100
+problem += 2 * x1 + x2 <= 100, "Resource_1_Constraint"
+
+# Resource 2 constraint: x1 + 2x2 <= 80
+problem += x1 + 2 * x2 <= 80, "Resource_2_Constraint"
+
+# Demand constraints
+problem += x1 <= 40, "Demand_Product_A"
+problem += x2 <= 30, "Demand_Product_B"
+
+# Step 7: Solve the problem
+problem.solve()
+
+# Step 8: Print the results
+print("Status:", pulp.LpStatus[problem.status])
+print("Optimal number of Product A to produce:", pulp.value(x1))
+print("Optimal number of Product B to produce:", pulp.value(x2))
+print("Total Profit:", pulp.value(problem.objective))
